@@ -1,0 +1,13 @@
+.git
+.next
+out
+node_modules
+coverage
+test-results
+playwright-report
+blob-report
+*.log
+.env*
+!.env.example
+AGENTS.md
+CLAUDE.md

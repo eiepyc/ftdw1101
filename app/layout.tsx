@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: "标记越牌时间",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{

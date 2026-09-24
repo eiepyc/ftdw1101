@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build:edgeone",
+  "installCommand": "npm ci",
+  "outputDirectory": ".next",
+  "nodeVersion": "24.5.0",
+  "cloudFunctions": {
+    "overseasRegions": ["ap-singapore"],
+    "nodejs": {
+      "maxDuration": 120
+    }
+  }
+}

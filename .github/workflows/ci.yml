@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20.20.2, 24.5.0]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm audit --audit-level=low
+      - run: npm run build:vercel
+        if: matrix.node-version == '24.5.0'
+        env:
+          APP_ORIGIN: https://slots.example.invalid
+          SUPABASE_URL: https://project-ref.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ci-only-placeholder-service-role
+          SESSION_HASH_SECRET: ci-only-session-hash-secret-0123456789abcdef
+          DEVICE_SIGNING_SECRET: ci-only-device-sign-secret-0123456789abcdef
+          DEVICE_HASH_SECRET: ci-only-device-hash-secret-0123456789abcdef
+          RATE_LIMIT_HMAC_SECRET: ci-only-rate-limit-secret-0123456789abcdef
+      - run: npx playwright install --with-deps chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/ms-playwright
+      - run: npm run build:edgeone
+        if: matrix.node-version == '24.5.0'
+        env:
+          APP_ORIGIN: https://slots.example.invalid
+          SUPABASE_URL: https://project-ref.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ci-only-placeholder-service-role
+          SESSION_HASH_SECRET: ci-only-session-hash-secret-0123456789abcdef
+          DEVICE_SIGNING_SECRET: ci-only-device-sign-secret-0123456789abcdef
+          DEVICE_HASH_SECRET: ci-only-device-hash-secret-0123456789abcdef
+          RATE_LIMIT_HMAC_SECRET: ci-only-rate-limit-secret-0123456789abcdef
+      - run: npm run build
+        env:
+          APP_ORIGIN: https://slots.example.invalid
+          SUPABASE_URL: https://project-ref.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ci-only-placeholder-service-role
+          SESSION_HASH_SECRET: ci-only-session-hash-secret-0123456789abcdef
+          DEVICE_SIGNING_SECRET: ci-only-device-sign-secret-0123456789abcdef
+          DEVICE_HASH_SECRET: ci-only-device-hash-secret-0123456789abcdef
+          RATE_LIMIT_HMAC_SECRET: ci-only-rate-limit-secret-0123456789abcdef
+      - run: npm run test:e2e
+        env:
+          PLAYWRIGHT_CHANNEL: ""
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/ms-playwright
+          PLAYWRIGHT_TEMP_ROOT: ${{ runner.temp }}
+          PLAYWRIGHT_OUTPUT_DIR: ${{ runner.temp }}/playwright-results
+          PLAYWRIGHT_REPORT_DIR: ${{ runner.temp }}/playwright-report

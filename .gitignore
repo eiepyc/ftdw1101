@@ -26,11 +26,21 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+.env*
+!.env.example
 
 # vercel
 .vercel
+/.edgeone/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# browser and test artifacts
+/playwright-report/
+/test-results/
+/blob-report/
+/coverage/
+/cache/
+*.log
